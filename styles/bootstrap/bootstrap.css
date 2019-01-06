@@ -4084,18 +4084,33 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     border-bottom-color: #fff;
   }
 }
-.nav-pills > li {
+.nav-pills-1 > li {
   float: left;
 }
-.nav-pills > li > a {
+.nav-pills-1 > li > a {
   border-radius: 4px;
 }
-.nav-pills > li + li {
+.nav-pills-1 > li + li {
   margin-left: 2px;
 }
-.nav-pills > li.active > a,
-.nav-pills > li.active > a:hover,
-.nav-pills > li.active > a:focus {
+.nav-pills-1 > li.active > a,
+.nav-pills-1 > li.active > a:hover,
+.nav-pills-1 > li.active > a:focus {
+  color: #fff;
+  background-color: #337ab7;
+}
+.nav-pills-2 > li {
+  float: left;
+}
+.nav-pills-2 > li > a {
+  border-radius: 4px;
+}
+.nav-pills-2 > li + li {
+  margin-left: 2px;
+}
+.nav-pills-2 > li.active > a,
+.nav-pills-2 > li.active > a:hover,
+.nav-pills-2 > li.active > a:focus {
   color: #fff;
   background-color: #337ab7;
 }
