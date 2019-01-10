@@ -56,7 +56,11 @@ switch ($action) {
             $pdo->supprimerFraisHorsForfait($idFrais);
         break;
 }
+$lesVisiteurs = $pdo->getLesVisiteurs();
 $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $mois);
 $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $mois);
+if($estComptable){
+    require 'vues/v_listeVisiteurs.php';
+}
 require 'vues/v_listeFraisForfait_visiteur.php';
 require 'vues/v_listeFraisHorsForfait_visiteur.php';

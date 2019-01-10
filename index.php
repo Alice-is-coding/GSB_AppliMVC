@@ -41,11 +41,10 @@ switch ($uc) {
         include 'controleurs/c_accueil.php';
         break;
     case 'gererFrais':
-        if ($estVisiteur) {
-            include 'controleurs/c_gererFrais.php';
-        } else {
-            include 'controleurs/c_validerFrais.php';
-        }
+        include 'controleurs/c_gererFrais.php';
+        break;
+    case 'validerFrais':
+        include 'controleurs/c_validerFrais.php';
         break;
     case 'etatFrais':
         include 'controleurs/c_etatFrais.php';

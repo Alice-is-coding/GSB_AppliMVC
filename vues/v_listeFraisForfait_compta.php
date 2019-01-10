@@ -15,7 +15,6 @@
  */
 ?>
 <div class="row"> 
-    <h3>Choisir le visiteur :</h3>
     <h2 class="compta">Valider la fiche de frais</h2>
     <h3>Eléments forfaitisés</h3>
     <div class="col-md-4">

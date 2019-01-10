@@ -106,6 +106,22 @@ class PdoGsb
     }
     
     /**
+     * Retourne tous les utilisateurs de type "Visiteur"
+     *
+     * @return id, nom, prenom des visiteurs médicaux
+     */
+    public function getLesVisiteurs()
+    {
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+            'SELECT id as idVisiteur, nom as nom, prenom as prenom '
+            . 'FROM utilisateur '
+            . 'WHERE utilisateur.idTypeusr = 1'
+        );
+        $requetePrepare->execute();
+        return $requetePrepare->fetchAll();
+    }
+    
+    /**
      * Retourne sous forme d'un tableau associatif toutes les lignes de frais
      * hors forfait concernées par les deux arguments.
      * La boucle foreach ne peut être utilisée ici car on procède
