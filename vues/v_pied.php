@@ -14,7 +14,7 @@
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 ?>
-        </div>
+    <script type="text/javascript" src="js/scripts.js"></script>
     </body>
 </html>
 

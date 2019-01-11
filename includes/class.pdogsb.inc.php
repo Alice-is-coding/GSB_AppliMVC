@@ -120,7 +120,24 @@ class PdoGsb
         $requetePrepare->execute();
         return $requetePrepare->fetchAll();
     }
-    
+    /**
+     * Retourne l'id d'un visiteur sélectionné selon son nom et son prenom
+     * 
+     * @param String $nom    nom du visiteur
+     * @param String $prenom prenom du visiteur
+     * @return String l'id du visiteur
+     */
+    public function getIdVisiteur($nom, $prenom) {
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+                'SELECT id FROM utilisateur '
+                . 'WHERE utilisateur.nom = :unNom '
+                . 'AND utilisateur.prenom = :unPrenom '
+                );
+        $requetePrepare->bindParam(':unNom', $nom, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unPrenom', $prenom, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        return $requetePrepare->fetch();
+    }
     /**
      * Retourne sous forme d'un tableau associatif toutes les lignes de frais
      * hors forfait concernées par les deux arguments.
