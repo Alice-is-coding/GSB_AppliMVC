@@ -16,22 +16,36 @@
 
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
 $idVisiteur = $_SESSION['idUtilisateur'];
+if(isset($_GET['Visiteurs'])){
+    $action = 'selectionnerMois';
+}
 switch ($action) {
+    case 'validerMajFraisForfait':
+        $lesFrais = filter_input(INPUT_POST, 'lesFrais', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
+        if (lesQteFraisValides($lesFrais)) {
+            $pdo->majFraisForfait($idVisiteur, $mois, $lesFrais);
+        } else {
+            ajouterErreur('Les valeurs des frais doivent être numériques');
+            include 'vues/v_erreurs.php';
+        }
+        break;
+    case 'selectionnerVisiteur':
+        $lesVisiteurs = $pdo->getLesVisiteurs();
+        include 'vues/v_listeVisiteurs.php';
+        include 'vues/v_listeMois_comptable.php';
+        break;
     case 'selectionnerMois':
-        $lesMois = $pdo->getLesMoisDisponibles($unId);
-        // Afin de sélectionner par défaut le dernier mois dans la zone de liste
-        // on demande toutes les clés, et on prend la première,
-        // les mois étant triés décroissants
+        $unVisiteur = $_GET['Visiteurs'];
+        $lesMois = $pdo->getLesMoisDisponibles($unVisiteur);
         $lesCles = array_keys($lesMois);
         $moisASelectionner = $lesCles[0];
-        include 'vues/v_listeMois.php';
-        include 'vules/listeVisiteurs.php';
+        include 'vues/v_listeMois_comptable.php';
         break;
     case 'voirEtatFrais':
         $leMois = filter_input(INPUT_POST, 'lstMois', FILTER_SANITIZE_STRING);
         $lesMois = $pdo->getLesMoisDisponibles($idVisiteur);
         $moisASelectionner = $leMois;
-        include 'vues/v_listeMois.php';
+        include 'vues/v_listeMois_comptable.php';
         $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $leMois);
         $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $leMois);
         $lesInfosFicheFrais = $pdo->getLesInfosFicheFrais($idVisiteur, $leMois);
@@ -43,5 +57,7 @@ switch ($action) {
         $dateModif = dateAnglaisVersFrancais($lesInfosFicheFrais['dateModif']);
         include 'vues/v_etatFrais.php';
 }
-$lesVisiteurs = $pdo->getLesVisiteurs();
-require 'vues/v_listeVisiteurs.php';
+// $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $mois);
+// $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $mois);
+// require 'vues/v_listeFraisForfait_compta.php';
+// require 'vues/v_listeFraisHorsForfait_compta.php';

@@ -10,13 +10,14 @@
  */
 ?>
 <div class="row">
-    <h4>Choisir le visiteur : </h4>
-    <div class="col-md-4">
-        <form method="post"
-              action="index.php?uc=validerFrais&action=selectionnerMois"
-              role="form">
-            <fieldset>
-                <select name="Visiteurs">
+    <div id="resultat">
+    </div>
+    <div class="col-md-5">
+         <form action="index.php?uc=validerFrais&action=voirEtatFrais" 
+               method="post" role="form">
+            <div class="form-group">
+                <label for="lstVisiteurs" accesskey="n">Choisir un visiteur:</label>
+                <select name="Visiteurs" id="lstVisiteurs" onchange="selectionMoisDispos()"> 
                     <option></option>
                     <?php
                     foreach ($lesVisiteurs as $unVisiteur) {
@@ -24,17 +25,12 @@
                         $unNom = htmlspecialchars($unVisiteur['nom']);
                         $unId = htmlspecialchars($unVisiteur['idVisiteur']);
                         ?>
-                    <option><?php echo $unNom.' '.$unPrenom ?></option>
+                    <option value="<?php echo $unId ?>"><?php echo $unNom.' '.$unPrenom ?></option>
                         <?php
                     }
                     ?>
                 </select>
-                <h4>Mois:</h4>
-                <select>
-                    <?php $today = getdate(); ?>
-                    <option><?php echo dateAnglaisVersFrancais($today) ?></option>
-                </select>
-            </fieldset>
+            </div>
         </form>
     </div>
 </div>

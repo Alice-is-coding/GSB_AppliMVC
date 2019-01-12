@@ -30,7 +30,7 @@ switch ($action) {
         $leMois = filter_input(INPUT_POST, 'lstMois', FILTER_SANITIZE_STRING);
         $lesMois = $pdo->getLesMoisDisponibles($idVisiteur);
         $moisASelectionner = $leMois;
-        include 'vues/v_listeMois.php';
+        include 'vues/v_listeMois_visiteur.php';
         $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $leMois);
         $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $leMois);
         $lesInfosFicheFrais = $pdo->getLesInfosFicheFrais($idVisiteur, $leMois);

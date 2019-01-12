@@ -19,7 +19,7 @@
     <h3>Eléments forfaitisés</h3>
     <div class="col-md-4">
         <form method="post" 
-              action="index.php?uc=gererFrais&action=validerMajFraisForfait" 
+              action="index.php?uc=validerFrais&action=validerMajFraisForfait" 
               role="form">
             <fieldset>       
                 <?php
