@@ -7,11 +7,11 @@
  * 
  */
 
-function selectionMoisDispos(){
-        $.get(
+function selectionMoisDispos($idVisiteur){
+        $.post(
             'controleurs/c_validerFrais.php', 
         {
-            Visiteurs : $('#lstVisiteurs').val()
+            Visiteurs : $idVisiteur
         }, 
         function(data){
             if (data !== ''){
@@ -21,4 +21,8 @@ function selectionMoisDispos(){
             }
         }
     );
+}
+
+function getOptionSelected(idVisiteur){
+    $('Visiteurs').val(idVisiteur);
 }

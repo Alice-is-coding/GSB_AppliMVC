@@ -30,9 +30,10 @@ if ($estVisiteur) {
 $uc = filter_input(INPUT_GET, 'uc', FILTER_SANITIZE_STRING);
 if ($uc && !$estConnecte) {
     $uc = 'connexion';
-} elseif (empty($uc)) {
+} else if (empty($uc)) {
     $uc = 'accueil';
 }
+
 switch ($uc) {
     case 'connexion':
         include 'controleurs/c_connexion.php';

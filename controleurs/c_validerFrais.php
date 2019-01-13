@@ -15,10 +15,7 @@
  */
 
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
-$idVisiteur = $_SESSION['idUtilisateur'];
-if(isset($_GET['Visiteurs'])){
-    $action = 'selectionnerMois';
-}
+
 switch ($action) {
     case 'validerMajFraisForfait':
         $lesFrais = filter_input(INPUT_POST, 'lesFrais', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
@@ -29,19 +26,22 @@ switch ($action) {
             include 'vues/v_erreurs.php';
         }
         break;
-    case 'selectionnerVisiteur':
+    case 'selectionnerVisiteurMois':
         $lesVisiteurs = $pdo->getLesVisiteurs();
+        if (isset($_POST['Visiteurs'])) {
+            $idVisiteur = $_POST['Visiteurs'];
+            $lesMois = $pdo->getLesMoisDisponibles($idVisiteur);
+            if (!(empty($lesMois))) {
+                $lesCles = array_keys($lesMois);
+                $moisASelectionner = $lesCles[0];
+            } else {
+                echo 'Pas de fiche de frais pour ce visiteur ce mois-ci';
+            }
+        }
         include 'vues/v_listeVisiteurs.php';
         include 'vues/v_listeMois_comptable.php';
         break;
-    case 'selectionnerMois':
-        $unVisiteur = $_GET['Visiteurs'];
-        $lesMois = $pdo->getLesMoisDisponibles($unVisiteur);
-        $lesCles = array_keys($lesMois);
-        $moisASelectionner = $lesCles[0];
-        include 'vues/v_listeMois_comptable.php';
-        break;
-    case 'voirEtatFrais':
+    /*case 'voirEtatFrais':
         $leMois = filter_input(INPUT_POST, 'lstMois', FILTER_SANITIZE_STRING);
         $lesMois = $pdo->getLesMoisDisponibles($idVisiteur);
         $moisASelectionner = $leMois;
@@ -55,7 +55,8 @@ switch ($action) {
         $montantValide = $lesInfosFicheFrais['montantValide'];
         $nbJustificatifs = $lesInfosFicheFrais['nbJustificatifs'];
         $dateModif = dateAnglaisVersFrancais($lesInfosFicheFrais['dateModif']);
-        include 'vues/v_etatFrais.php';
+        include 'vues/v_etatFrais.php';*/
+        
 }
 // $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $mois);
 // $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $mois);

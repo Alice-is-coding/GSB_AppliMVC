@@ -22,7 +22,7 @@
                 <label for="lstMois" accesskey="n">Mois : </label>
                 <select id="lstMois" name="lstMois" class="form-control">
                     <?php
-                    try{
+                    try {
                         foreach ($lesMois as $unMois) {
                             $mois = $unMois['mois'];
                             $numAnnee = $unMois['numAnnee'];
@@ -39,7 +39,7 @@
                                 <?php
                             }
                         }
-                    } catch (Exception $ex){
+                    } catch (Exception $ex) {
                         ?>
                         <option></option>
                          <?php
