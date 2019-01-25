@@ -27,7 +27,7 @@
                         $unId = htmlspecialchars($unVisiteur['idVisiteur']);
                         ?>
                         <option value="<?php echo $unId ?>"><?php echo $unNom.' '.$unPrenom ?></option>
-                        <?php 
+                        <?php
                     }
                     ?>
                 </select>

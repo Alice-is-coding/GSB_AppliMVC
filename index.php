@@ -30,7 +30,7 @@ if ($estVisiteur) {
 $uc = filter_input(INPUT_GET, 'uc', FILTER_SANITIZE_STRING);
 if ($uc && !$estConnecte) {
     $uc = 'connexion';
-} else if (empty($uc)) {
+} elseif (empty($uc)) {
     $uc = 'accueil';
 }
 

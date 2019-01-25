@@ -18,9 +18,9 @@
     <div class="col-md-4">
         <form action="index.php?uc=validerFrais&action=selectionnerMois" 
               method="post" role="form">
-            <div class="form-group">
+            <div id="lesMois" class="form-group">
                 <label for="lstMois" accesskey="n">Mois : </label>
-                <select id="lstMois" name="Mois" class="form-control">
+                <select id="lstMois" name="Mois" class="form-control" onchange="selectFicheFrais(this.value)">
                 </select>
             </div>
         </form>

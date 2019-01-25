@@ -15,9 +15,6 @@
  */
 
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
-if (isset($_REQUEST['q'])) {
-    $action = 'selectionnerMois';
-}
 switch ($action) {
     case 'validerMajFraisForfait':
         $lesFrais = filter_input(INPUT_POST, 'lesFrais', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
@@ -34,22 +31,18 @@ switch ($action) {
         include 'vues/v_listeMois_comptable.php';
         break;
     case 'selectionnerMois':
-        $q = filter_input($_REQUEST, 'q'); //contient le visiteur sélectionné dans la liste
+        require_once '../includes/class.pdogsb.inc.php';
+        $pdo = PdoGsb::getPdoGsb();
+        header("Content-Type: application/json; charset=UTF-8");
+        $q = json_decode($_GET['q'], false); //contient le visiteur sélectionné dans la liste
         $mois = "";
-        
-        //test si requête != vide
-        if ($q !== "") {
-            $lesMois = $pdo->getLesMoisDisponibles($q);
-        }
-            include 'vues/v_listeMois_comptable.php';
-            //include 'vues/v_listeFraisForfait_compta.php';
-            //include 'vues/v_listeFraisHorsForfait_compta.php';
+        $lesMois = $pdo->getLesMoisDisponibles($q);
+        echo json_encode($lesMois);
         break;
     case 'validationFrais':
-        $leMois = filter_input(INPUT_POST, 'Mois', FILTER_SANITIZE_STRING);
-        $moisASelectionner = $leMois;
-        include 'vues/v_listeVisiteurs.php';
-        include 'vues/v_listeMois_comptable.php';
+        require_once '../include/class.pdogsb.inc.php';
+        header("Content-Type: application/json; charset=UTF-8");
+        $leMois = json_decode($_GET['m'], false); //contient mois sélectionné dans liste
         $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $leMois);
         $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $leMois);
 }
