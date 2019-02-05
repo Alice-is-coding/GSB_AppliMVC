@@ -20,9 +20,12 @@
               method="post" role="form">
             <div id="lesMois" class="form-group">
                 <label for="lstMois" accesskey="n">Mois : </label>
-                <select id="lstMois" name="Mois" class="form-control" onchange="selectFicheFrais(this.value)">
+                <select id="lstMois" name="Mois" class="form-control" onchange="selectFicheFraisForfait(this.value)">
                 </select>
             </div>
         </form>
     </div>
 </div>
+<div id="lesFraisF"></div>
+<div id="lesFraisHF"></div>
+<div id="justificatifs"></div>

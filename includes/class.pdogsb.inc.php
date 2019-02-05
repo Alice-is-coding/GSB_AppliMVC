@@ -267,6 +267,52 @@ class PdoGsb
             $requetePrepare->execute();
         }
     }
+    
+    /**
+     * requête update de mise à jour d'un frais HF bien précis
+     * tronque le libelle si jamais il dépasse maxLength du champ libelle
+     * @param array $lesFrais liste des frais HF ({date: data ; libelle: data ; montant: data})
+     * @param integer $id idLigne
+     */
+    public function majFraisHorsForfait($lesFrais, $id)
+    {
+        //conversion date français vers anglais pour être acceptée par la phpmyadmin
+        $maDate = dateFrancaisVersAnglais($lesFrais['date']);
+        
+        //test : si libelle > 100 caractères alors on le tronque par la fin au nb
+        //caractères max du champ libelle
+        if (strlen($lesFrais['libelle']) > 100) {
+            $lesFrais['libelle'] = substr($lesFrais['libelle'], 0, 100);
+        }
+        
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+            'UPDATE lignefraishorsforfait '
+            . 'SET lignefraishorsforfait.libelle = :unLibelle, '
+            . 'lignefraishorsforfait.date = :uneDate, '
+            . 'lignefraishorsforfait.montant = :unMontant '
+            . 'WHERE lignefraishorsforfait.id = :unId'
+        );
+        $requetePrepare->bindParam(':unLibelle', $lesFrais['libelle'], PDO::PARAM_STR);
+        $requetePrepare->bindParam(':uneDate', $maDate, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unMontant', $lesFrais['montant'], PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unId', $id, PDO::PARAM_INT);
+        $requetePrepare->execute();
+    }
+    
+/**
+ * Effectue la requête de modification pour préciser [REFUSE] devant un frais refusé
+ * @param integer $id l'id du visiteur
+ */
+    public function refuserFraisHorsForfait($id)
+    {
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+            'UPDATE lignefraishorsforfait '
+            . 'SET lignefraishorsforfait.libelle = CONCAT("[REFUSE] ", lignefraishorsforfait.libelle) '
+            . 'WHERE lignefraishorsforfait.id = :unId'
+        );
+        $requetePrepare->bindParam(':unId', $id, PDO::PARAM_INT);
+        $requetePrepare->execute();
+    }
 
     /**
      * Met à jour le nombre de justificatifs de la table ficheFrais
@@ -280,7 +326,7 @@ class PdoGsb
      */
     public function majNbJustificatifs($idVisiteur, $mois, $nbJustificatifs)
     {
-        $requetePrepare = PdoGB::$monPdo->prepare(
+        $requetePrepare = PdoGsb::$monPdo->prepare(
             'UPDATE fichefrais '
             . 'SET nbjustificatifs = :unNbJustificatifs '
             . 'WHERE fichefrais.idvisiteur = :unIdVisiteur '
@@ -523,7 +569,8 @@ class PdoGsb
         $requetePrepare->execute();
     }
     
-    public function getMoisDispos(){
+    public function getMoisDispos()
+    {
         $requetePrepare = PdoGsb::$monPdo->prepare(
                 'SELECT mois '
                 . 'FROM ficheFrais '

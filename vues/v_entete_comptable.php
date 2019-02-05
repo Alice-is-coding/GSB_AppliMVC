@@ -27,7 +27,7 @@
         <link href="./styles/style.css" rel="stylesheet">
     </head>
     <body>
-        <div class="container">
+        <div class="container" id="conteneur-global">
             <?php
             $uc = filter_input(INPUT_GET, 'uc', FILTER_SANITIZE_STRING);
             if ($estConnecte) {

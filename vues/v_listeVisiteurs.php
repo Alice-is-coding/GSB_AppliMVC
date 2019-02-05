@@ -17,7 +17,7 @@
                method="post" role="form">
             <div class="form-group">
                 <label for="lstVisiteurs" accesskey="n">Choisir un visiteur:</label>
-                <select name="Visiteurs" id="lstVisiteurs" onchange="selectMoisDispos(this.value)">
+                <select name="Visiteurs" class="form-control" id="lstVisiteurs" onchange="selectMoisDispos(this.value)">
                         "> 
                     <option value="0"></option>
                     <?php

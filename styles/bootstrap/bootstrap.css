@@ -2546,6 +2546,7 @@ output {
   line-height: 1.42857143;
   color: #555;
 }
+
 .form-control {
   display: block;
   width: 100%;
@@ -5801,6 +5802,7 @@ button.list-group-item-danger.active:focus {
 }
 .panel-secondary {
   border-color: #e68a00;
+  border-bottom-color: #e68a00;
 }
 .panel-secondary > .panel-heading {
   color: #fff;
