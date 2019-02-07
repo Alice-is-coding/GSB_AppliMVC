@@ -128,4 +128,22 @@ switch ($action) {
         $pdo->refuserFraisHorsForfait($ligne);
         echo json_encode('Refus OK.');
         break;
+    case 'reporterFraisHorsForfait':
+        require_once '../includes/fct.inc.php';
+        require_once '../includes/class.pdogsb.inc.php';
+        $pdo = PdoGsb::getPdoGsb();
+        header("Content-Type: application/json; charset=UTF-8");
+        $idVisiteur = json_decode($_GET['q'], false);
+        $mois = json_decode($_GET['m'], false);
+        $ligne = json_decode($_GET['ligne'], false);
+        //récupère le mois suivant
+        $moisSuivant = getMoisSuivant(getMois(date('d/m/Y')));
+        //on crée une nouvelle fiche de frais pour le visiteur si jamais elle n'existe pas
+        if ($pdo->estPremierFraisMois($idVisiteur, $moisSuivant)) {
+            $pdo->creeNouvellesLignesFrais($idVisiteur, $moisSuivant);
+        }
+        //on reporte le frais HF au mois suivant
+        $pdo->reporterFraisHorsForfait($ligne, $moisSuivant);
+        echo json_encode('Report OK.');
+        break;
 }

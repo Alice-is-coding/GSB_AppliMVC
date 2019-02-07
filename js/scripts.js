@@ -246,6 +246,7 @@ function selectMoisDispos(vstr) {
                     btnReport.className = "btn btn-warning";
                     btnReport.type = "button";
                     btnReport.innerHTML = "Reporter";  
+                    btnReport.setAttribute("onclick", 'reporterFraisHorsForfait("'+myObj[x].id+'row")');
                     btnRefus.className = "btn btn-danger";
                     btnRefus.id = "btnRefus"+myObj[x].id+"row";
                     btnRefus.type = "button";
@@ -389,9 +390,9 @@ function setModifs(className, action) {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 var myObj = JSON.parse(this.responseText);
                 console.log(myObj); //pour infos
-                if(myObj != null && (typeof myObj != "string" | myObj === 'Refus OK.')) {;
+                if(myObj != null && (typeof myObj != "string" | myObj === 'Refus OK.' | myObj === 'Report OK.')) {;
                     alert('La modification a bien été prise en compte.');
-                }else if (typeof myObj === "string" && myObj !== 'Refus OK.'){
+                }else if (typeof myObj === "string"){
                     //creation des éléments pour l'affichage d'erreur
                     var div = document.createElement('div');
                     div.id = "erreur"; //id qui contiendra le < p > erreur
@@ -434,7 +435,13 @@ function setModifs(className, action) {
         }else if(className === 'justificatifs') {  
             xhr.open("POST", "controleurs/c_validerFrais.php?q="+ JSON.stringify(visiteurSelected) +"&m="+ JSON.parse(moisSelected) +"&j="+ JSON.stringify(document.getElementById('leNb').value) +"&action="+action+"", true);
         }else {
-            xhr.open("POST", "controleurs/c_validerFrais.php?q="+ JSON.stringify(visiteurSelected) +"&m="+ JSON.parse(moisSelected) +"&lesFrais="+ JSON.stringify(lesFrais) +"&ligne="+JSON.parse(parseInt(className))+"&action="+action+"", true);
+            if (action == "validerMajFraisHorsForfait"){
+                xhr.open("POST", "controleurs/c_validerFrais.php?lesFrais="+ JSON.stringify(lesFrais) +"&ligne="+JSON.parse(parseInt(className))+"&action="+action+"", true);
+            } else if (action == "refuserFraisHorsForfait"){
+                xhr.open("POST", "controleurs/c_validerFrais.php?ligne="+JSON.parse(parseInt(className))+"&action="+action+"", true);
+            } else {
+                xhr.open("POST", "controleurs/c_validerFrais.php?q="+ JSON.stringify(visiteurSelected) +"&m="+ JSON.parse(moisSelected) +"&ligne="+JSON.parse(parseInt(className))+"&action="+action+"", true);
+            }
         }
         xhr.send();
     }  
@@ -456,6 +463,18 @@ function refuserFraisHorsForfait(className) {
     //appel de la fonction qui va procéder aux modifications du label 
     setModifs(className, "refuserFraisHorsForfait");
     //réaffichage des frais hors forfait
+    selectFicheFraisHorsForfait(idVisiteur, mois);
+}
+
+function reporterFraisHorsForfait(className) {
+    
+    //declarations
+    var idVisiteur = getOptionSelected('lstVisiteurs');
+    var mois = getOptionSelected('lstMois');
+    
+    //appel de la fonction qui va procéder au report du frais HF au mois suivant par une requête update
+    setModifs(className, "reporterFraisHorsForfait");
+    //refresh des frais hors forfait
     selectFicheFraisHorsForfait(idVisiteur, mois);
 }
 

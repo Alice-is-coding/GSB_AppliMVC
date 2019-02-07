@@ -276,7 +276,7 @@ class PdoGsb
      */
     public function majFraisHorsForfait($lesFrais, $id)
     {
-        //conversion date français vers anglais pour être acceptée par la phpmyadmin
+        //conversion date français vers anglais pour être acceptée par phpmyadmin
         $maDate = dateFrancaisVersAnglais($lesFrais['date']);
         
         //test : si libelle > 100 caractères alors on le tronque par la fin au nb
@@ -313,7 +313,25 @@ class PdoGsb
         $requetePrepare->bindParam(':unId', $id, PDO::PARAM_INT);
         $requetePrepare->execute();
     }
-
+    
+    /**
+     * reporte le frais HF, dont l'id est passé en paramètre, au mois suivant
+     * @param Integer $id
+     * @param String $mois
+     */
+    public function reporterFraisHorsForfait($id, $mois)
+    {      
+        //requête update pour modifier le mois de la ligne concernée afin que le frais HF soit reporté
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+            'UPDATE lignefraishorsforfait '
+            . 'SET lignefraishorsforfait.mois = :unMois '
+            . 'WHERE lignefraishorsforfait.id = :unId'
+        );
+        $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unId', $id, PDO::PARAM_INT);
+        $requetePrepare->execute();
+    }
+    
     /**
      * Met à jour le nombre de justificatifs de la table ficheFrais
      * pour le mois et le visiteur concerné
@@ -572,12 +590,12 @@ class PdoGsb
     public function getMoisDispos()
     {
         $requetePrepare = PdoGsb::$monPdo->prepare(
-                'SELECT mois '
-                . 'FROM ficheFrais '
-                . 'WHERE idVisiteur = :idVisiteur'
-            );
-       $requetePrepare->bindParam(':idVisiteur', $_POST['idVisiteur'], PDO::PARAM_STR);
-       $requetePrepare->execute();
-       return $requetePrepare->fetchAll();
+            'SELECT mois '
+            . 'FROM ficheFrais '
+            . 'WHERE idVisiteur = :idVisiteur'
+        );
+        $requetePrepare->bindParam(':idVisiteur', $_POST['idVisiteur'], PDO::PARAM_STR);
+        $requetePrepare->execute();
+        return $requetePrepare->fetchAll();
     }
 }
