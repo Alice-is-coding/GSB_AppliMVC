@@ -34,6 +34,8 @@ function resetValiderFicheFrais() {
     if(document.getElementById('justificatifs') != null) {
         document.getElementById('justificatifs').innerHTML = '';
     }
+    //hidden du button validerFicheFrais
+    document.getElementById('validerFicheFrais').setAttribute('style', 'display: none');
 }
 
 /**
@@ -79,6 +81,8 @@ function selectMoisDispos(vstr) {
                 message.id = "vide";
                 message.textContent = "Pas de facture pour ce visiteur ce mois-ci";
                 div.appendChild(message);  
+                //hidden du button validerFicheFrais
+                document.getElementById('validerFicheFrais').setAttribute('style', 'display: none');
             }else if(myObj.length != 0 && maListeVisiteurs.selectedIndex > 0) {
                 //sinon création des éléments <option> dans la liste lstMois correspondant
                 //à tous  les mois dispos pour ce visiteur
@@ -90,6 +94,8 @@ function selectMoisDispos(vstr) {
                     //élément lstMois <select> parent de l'élément <option> enfant
                     maListeMois.appendChild(option); 
                 }
+                //affichage du button validerFicheFrais
+                document.getElementById('validerFicheFrais').setAttribute('style', 'display: contents');
                 //affichage de la page listeFraisForfait à la suite des mois
                 $('#lesFraisF').load('vues/v_listeFraisForfait_compta.php');
                 //envoie d'une requête ajax par la fonction selectFicheFrais pour récupérer les infos relatives au mois sélectionné par défaut
@@ -327,7 +333,6 @@ function selectJustificatifs(vstr, mstr){
                 document.getElementById('divJ').appendChild(input);
                 document.getElementById('conteneurJustificatifs').appendChild(btnCorrect);
                 document.getElementById('conteneurJustificatifs').appendChild(btnReset);
-
             }
         }
     };
@@ -392,6 +397,7 @@ function setModifs(className, action) {
                 console.log(myObj); //pour infos
                 if(myObj != null && (typeof myObj != "string" | myObj === 'Refus OK.' | myObj === 'Report OK.')) {;
                     alert('La modification a bien été prise en compte.');
+                    return myObj;
                 }else if (typeof myObj === "string"){
                     //creation des éléments pour l'affichage d'erreur
                     var div = document.createElement('div');
@@ -426,6 +432,7 @@ function setModifs(className, action) {
                     setTimeout(function(){document.getElementById('erreur').remove();}, 5000); //supprime l'erreur de la page après 5sec
                     //pas le choix de faire comme ça car sinon impossibilité de le supprimer car si suppr au moment d'affichage de frais f lors d'un 
                     //changement de mois, ce sera correct mais alors lors du refresh par appel de la fonction fraisf ci-dessus, l'erreur serait supprimée également  
+                    return null;
                 }
             }
         };
@@ -466,6 +473,13 @@ function refuserFraisHorsForfait(className) {
     selectFicheFraisHorsForfait(idVisiteur, mois);
 }
 
+/**
+ * Reporte un frais hors forfait :
+ * appelle de la fonction setModifs qui envoie la requête AJAX
+ * refresh les frais hors forfait
+ * @param {String} className
+ * @returns {void}
+ */
 function reporterFraisHorsForfait(className) {
     
     //declarations
@@ -473,8 +487,42 @@ function reporterFraisHorsForfait(className) {
     var mois = getOptionSelected('lstMois');
     
     //appel de la fonction qui va procéder au report du frais HF au mois suivant par une requête update
-    setModifs(className, "reporterFraisHorsForfait");
-    //refresh des frais hors forfait
-    selectFicheFraisHorsForfait(idVisiteur, mois);
+    var reportOk = setModifs(className, "reporterFraisHorsForfait");
+    //refresh des frais hors forfait si report OK
+    if (reportOk !== null){
+        selectFicheFraisHorsForfait(idVisiteur, mois);
+    }    
 }
 
+/**
+ * valide une fiche de frais après confirmation de l'utilisateur
+ * envoie d'une requête HTTP avec AJAX pour modifier l'état de la fiche 
+ * du visiteur concerné pour le mois concerné et met à jours la date de modif. 
+ * de la fiche.
+ * Puis fait un refresh de la page avec l'appelle de selectMoisDispos afin de ne
+ * resélectionner que les mois dont l'état est à 'CL'
+ * @returns {void}
+ */
+function validerFicheFrais() {
+    
+    if (confirm('Voulez-vous vraiment valider la fiche de frais ?')) {
+        var idVisiteur = getOptionSelected('lstVisiteurs');
+        var moisSelected = getOptionSelected('lstMois');
+        var xhr = new XMLHttpRequest();
+    
+        xhr.onreadystatechange = function(){
+            console.log(this); //pour infos
+            if(xhr.readyState === 4 && xhr.status === 200) {
+                var myObj = JSON.parse(this.responseText);
+                console.log(myObj); //pour infos
+                if(myObj === 'Validation OK.') {
+                    selectMoisDispos(idVisiteur);
+                }else {
+                    console.log('Une erreur est survenue..');
+                }
+            }
+        };
+        xhr.open("POST", "controleurs/c_validerFrais.php?q="+ JSON.stringify(idVisiteur) +"&m="+ JSON.parse(moisSelected) +"&action=validerFicheFrais");
+        xhr.send();
+    }    
+}

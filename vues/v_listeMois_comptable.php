@@ -29,3 +29,6 @@
 <div id="lesFraisF"></div>
 <div id="lesFraisHF"></div>
 <div id="justificatifs"></div>
+<div id="validerFicheFrais" style="display: none">
+    <button class="btn btn-success" type="button" onclick="validerFicheFrais()">Valider la Fiche de Frais</button>
+</div>

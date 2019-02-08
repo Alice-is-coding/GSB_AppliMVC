@@ -21,8 +21,14 @@ $numMois = substr($mois, 4, 2);
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
 switch ($action) {
     case 'saisirFrais':
+        $moisPrecedent = getMoisPrecedent($mois); //récupère le mois précédent
+        $precedenteFiche = $pdo->getLesInfosFicheFrais($idVisiteur, $moisPrecedent); //récupère la fiche du mois précédent
         if ($pdo->estPremierFraisMois($idVisiteur, $mois)) {
             $pdo->creeNouvellesLignesFrais($idVisiteur, $mois);
+        }else if($moisPrecedent['idEtat'] == 'CR') {
+            //si la fiche du nouveau mois existe alors c'est qu'il y a eu report de frais
+            //dans ce cas si l'état du mois précédent est à 'CR' on l'a fixe à 'CL'
+            $pdo->majEtatFicheFrais($idVisiteur, $moisPrecedent, 'CL');
         }
         break;
     case 'validerMajFraisForfait':

@@ -319,17 +319,56 @@ class PdoGsb
      * @param Integer $id
      * @param String $mois
      */
-    public function reporterFraisHorsForfait($id, $mois)
-    {      
+    public function reporterFraisHorsForfait($id, $idVisiteur)
+    {
         //requête update pour modifier le mois de la ligne concernée afin que le frais HF soit reporté
         $requetePrepare = PdoGsb::$monPdo->prepare(
             'UPDATE lignefraishorsforfait '
-            . 'SET lignefraishorsforfait.mois = :unMois '
-            . 'WHERE lignefraishorsforfait.id = :unId'
+            . 'SET lignefraishorsforfait.mois = (SELECT MAX(fichefrais.mois) '
+                . 'FROM fichefrais '
+                . 'WHERE fichefrais.idvisiteur = :unVisiteur) '
+            . 'WHERE lignefraishorsforfait.id = :unId '
         );
-        $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unVisiteur', $idVisiteur, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unId', $id, PDO::PARAM_INT);
         $requetePrepare->execute();
+    }
+    
+    /**
+     * Créer une nouvelle fiche de frais pour reporter un frais hors forfait
+     * même requête que fonction creeNouvelleLigneFrais SAUF qu'il n'y a pas de
+     * passage de l'état CR à CL puisque la fiche actuelle doit encore être en
+     * Etat CR
+     * @param String $idVisiteur
+     * @param String $mois
+     */
+    public function creerNouvelleLigneFraisPourReport($idVisiteur, $mois)
+    {
+        
+           $requetePrepare = PdoGsb::$monPdo->prepare(
+               'INSERT INTO fichefrais (idvisiteur,mois,nbjustificatifs,'
+               . 'montantvalide,datemodif,idetat) '
+               . "VALUES (:unIdVisiteur,:unMois,0,0,now(),'CR')"
+           );
+        $requetePrepare->bindParam(':unIdVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+        $requetePrepare->execute();
+        $lesIdFrais = $this->getLesIdFrais();
+        foreach ($lesIdFrais as $unIdFrais) {
+            $requetePrepare = PdoGsb::$monPdo->prepare(
+                'INSERT INTO lignefraisforfait (idvisiteur,mois,'
+                . 'idfraisforfait,quantite) '
+                . 'VALUES(:unIdVisiteur, :unMois, :idFrais, 0)'
+            );
+            $requetePrepare->bindParam(':unIdVisiteur', $idVisiteur, PDO::PARAM_STR);
+            $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+            $requetePrepare->bindParam(
+                ':idFrais',
+                $unIdFrais['idfrais'],
+                PDO::PARAM_STR
+            );
+            $requetePrepare->execute();
+        }
     }
     
     /**
@@ -576,8 +615,8 @@ class PdoGsb
     public function majEtatFicheFrais($idVisiteur, $mois, $etat)
     {
         $requetePrepare = PdoGSB::$monPdo->prepare(
-            'UPDATE ficheFrais '
-            . 'SET idetat = :unEtat, datemodif = now() '
+            'UPDATE fichefrais '
+            . 'SET fichefrais.idetat = :unEtat, fichefrais.datemodif = now() '
             . 'WHERE fichefrais.idvisiteur = :unIdVisiteur '
             . 'AND fichefrais.mois = :unMois'
         );
@@ -587,15 +626,27 @@ class PdoGsb
         $requetePrepare->execute();
     }
     
-    public function getMoisDispos()
+    public function getMoisPourValidation($idVisiteur)
     {
-        $requetePrepare = PdoGsb::$monPdo->prepare(
-            'SELECT mois '
-            . 'FROM ficheFrais '
-            . 'WHERE idVisiteur = :idVisiteur'
+        $requetePrepare = PdoGSB::$monPdo->prepare(
+            'SELECT fichefrais.mois AS mois FROM fichefrais '
+            . 'WHERE fichefrais.idvisiteur = :unIdVisiteur '
+            . 'AND fichefrais.idetat = "CL" '
+            . 'ORDER BY fichefrais.mois desc'
         );
-        $requetePrepare->bindParam(':idVisiteur', $_POST['idVisiteur'], PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unIdVisiteur', $idVisiteur, PDO::PARAM_STR);
         $requetePrepare->execute();
-        return $requetePrepare->fetchAll();
+        $lesMois = array();
+        while ($laLigne = $requetePrepare->fetch()) {
+            $mois = $laLigne['mois'];
+            $numAnnee = substr($mois, 0, 4);
+            $numMois = substr($mois, 4, 2);
+            $lesMois[] = array(
+                'mois' => $mois,
+                'numAnnee' => $numAnnee,
+                'numMois' => $numMois
+            );
+        }
+        return $lesMois;
     }
 }

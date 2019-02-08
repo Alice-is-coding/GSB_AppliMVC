@@ -27,8 +27,9 @@ switch ($action) {
         header("Content-Type: application/json; charset=UTF-8");
         $q = json_decode($_GET['q'], false); //contient le visiteur sélectionné dans la liste
         $mois = "";
-        $lesMois = $pdo->getLesMoisDisponibles($q);
-        echo json_encode($lesMois);
+        $lesMois = $pdo->getMoisPourValidation($q); //récupère les mois d'un visiteur
+                                                    //dont l'état est à "CL"
+        echo json_encode($lesMois); //encodage de la réponse
         break;
     case 'fraisForfait':
         require_once '../includes/fct.inc.php';
@@ -38,7 +39,7 @@ switch ($action) {
         $leMois = json_decode($_GET['m'], false); //contient mois sélectionné dans liste
         $idVisiteur = json_decode($_GET['q'], false); //contient le visiteur sélectionné dans liste
         $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $leMois);
-        echo json_encode($lesFraisForfait);
+        echo json_encode($lesFraisForfait); //encodage de la réponse
         break;
     case 'fraisHorsForfait':
         require_once '../includes/fct.inc.php';
@@ -48,7 +49,7 @@ switch ($action) {
         $leMois = json_decode($_GET['m'], false); //contient mois sélectionné dans liste
         $idVisiteur = json_decode($_GET['q'], false); //contient le visiteur sélectionné dans liste
         $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($idVisiteur, $leMois);
-        echo json_encode($lesFraisHorsForfait);
+        echo json_encode($lesFraisHorsForfait); //encodage de la réponse
         break;
     case 'justificatifs':
         require_once '../includes/class.pdogsb.inc.php';
@@ -57,7 +58,7 @@ switch ($action) {
         $idVisiteur = json_decode($_GET['q'], false);
         $leMois = json_decode($_GET['m'], false);
         $nbJustificatifs = $pdo->getNbjustificatifs($idVisiteur, $leMois);
-        echo json_encode($nbJustificatifs);
+        echo json_encode($nbJustificatifs); //encodage de la réponse
         break;
     case 'validerMajFraisForfait':
         require_once '../includes/fct.inc.php';
@@ -71,13 +72,13 @@ switch ($action) {
                                                          //JSON_OBJECT_AS_ARRAY (convertion en Array)
         if (lesQteFraisValides($lesFrais)) {
             $pdo->majFraisForfait($idVisiteur, $idMois, $lesFrais);
-            echo json_encode($lesFrais);
+            echo json_encode($lesFrais); //encodage de la réponse
         } else {
             ajouterErreur('Les valeurs des frais doivent être numériques');
             foreach ($_REQUEST['erreurs'] as $erreur) {
                 $erreurjson = $erreur;
             }
-            echo json_encode($erreurjson);
+            echo json_encode($erreurjson); //encodage de l'erreur retournée
         }
         break;
     case 'validerMajFraisHorsForfait':
@@ -97,7 +98,7 @@ switch ($action) {
             foreach ($_REQUEST['erreurs'] as $erreur) {
                 $erreurjson = $erreur;
             }
-            echo json_encode($erreurjson);
+            echo json_encode($erreurjson); //encodage de la réponse
         }
         break;
     case 'validerMajJustificatifs':
@@ -116,7 +117,7 @@ switch ($action) {
             foreach ($_REQUEST['erreurs'] as $erreur) {
                 $erreurjson = $erreur;
             }
-            echo json_encode($erreurjson);
+            echo json_encode($erreurjson); //encodage de la réponse
         }
         break;
     case 'refuserFraisHorsForfait':
@@ -126,7 +127,7 @@ switch ($action) {
         header("Content-Type: application/json; charset=UTF-8");
         $ligne = json_decode($_GET['ligne'], false);
         $pdo->refuserFraisHorsForfait($ligne);
-        echo json_encode('Refus OK.');
+        echo json_encode('Refus OK.'); //encodage de la réponse
         break;
     case 'reporterFraisHorsForfait':
         require_once '../includes/fct.inc.php';
@@ -140,10 +141,21 @@ switch ($action) {
         $moisSuivant = getMoisSuivant(getMois(date('d/m/Y')));
         //on crée une nouvelle fiche de frais pour le visiteur si jamais elle n'existe pas
         if ($pdo->estPremierFraisMois($idVisiteur, $moisSuivant)) {
-            $pdo->creeNouvellesLignesFrais($idVisiteur, $moisSuivant);
+            $pdo->creerNouvelleLigneFraisPourReport($idVisiteur, $moisSuivant);
         }
         //on reporte le frais HF au mois suivant
-        $pdo->reporterFraisHorsForfait($ligne, $moisSuivant);
-        echo json_encode('Report OK.');
+        $pdo->reporterFraisHorsForfait($ligne, $idVisiteur);
+        echo json_encode('Report OK.'); //encodage de la réponse
+        break;
+    case 'validerFicheFrais':
+        require_once '../includes/fct.inc.php';
+        require_once '../includes/class.pdogsb.inc.php';
+        $pdo = PdoGsb::getPdoGsb();
+        header("Content-Type: application/json; charset=UTF-8");
+        $idVisiteur = json_decode($_GET['q'], false);
+        $mois = json_decode($_GET['m'], false);
+        //le syst. passe la fiche à l'état 'Validée' + màj la date de modif de fiche
+        $pdo->majEtatFicheFrais($idVisiteur, (string)$mois, "VA");
+        echo json_encode('Validation OK.'); //encodage de la réponse
         break;
 }
