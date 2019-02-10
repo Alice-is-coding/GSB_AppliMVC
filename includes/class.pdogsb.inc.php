@@ -169,6 +169,29 @@ class PdoGsb
         }
         return $lesLignes;
     }
+    
+    /**
+     * Récupère le montant des frais hors forfait non refusés
+     * pour un visiteur et un mois précis
+     * @param String $idVisiteur
+     * @param Stirng $mois
+     * @return Array $lesLignes tableau des montants des frais HF
+     */
+    public function getLesFraisHorsForfaitPourValidation($idVisiteur, $mois)
+    {
+        $requetePrepapre = PdoGsb::$monPdo->prepare(
+            'SELECT lignefraishorsforfait.montant '
+            . 'FROM lignefraishorsforfait '
+            . 'WHERE lignefraishorsforfait.libelle NOT LIKE "%[REFUSE]%" '
+            . 'AND lignefraishorsforfait.idvisiteur = :unVisiteur '
+            . 'AND lignefraishorsforfait.mois = :unMois'
+        );
+        $requetePrepapre->bindParam(':unVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepapre->bindParam(':unMois', $mois, PDO::PARAM_STR);
+        $requetePrepapre->execute();
+        $lesLignes = $requetePrepapre->fetchAll();
+        return $lesLignes;
+    }
 
     /**
      * Retourne le nombre de justificatif d'un visiteur pour un mois donné
@@ -230,6 +253,22 @@ class PdoGsb
     {
         $requetePrepare = PdoGsb::$monPdo->prepare(
             'SELECT fraisforfait.id as idfrais '
+            . 'FROM fraisforfait ORDER BY fraisforfait.id'
+        );
+        $requetePrepare->execute();
+        return $requetePrepare->fetchAll();
+    }
+    
+    /**
+     * Retourne tous les id de la table fraisForfait avec leur montant respectif
+     *
+     * @return Array un tableau associatif
+     */
+    public function getMontantDesIdFrais()
+    {
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+            'SELECT fraisforfait.id as idfrais, '
+            . 'fraisforfait.montant as montant '
             . 'FROM fraisforfait ORDER BY fraisforfait.id'
         );
         $requetePrepare->execute();
@@ -622,6 +661,84 @@ class PdoGsb
         );
         $requetePrepare->bindParam(':unEtat', $etat, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unIdVisiteur', $idVisiteur, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
+        $requetePrepare->execute();
+    }
+    
+    /**
+    * Calcul le total des frais hors forfait d'un tableau de frais HF envoyé en param.
+    *
+    * @param Array $lesFraisHF   tableau associatif des frais hors forfait
+    * @return Float              montant total € des frais hors forfait
+    */
+    public function calculMontantTotalFraisHF($lesFraisHF)
+    {
+        //declaration
+        $montantTotalFraisHF = 0; //contiendra le total € des frais forfait
+
+        //calcul du montant total des frais hors forfait
+        for ($i = 0; $i < count($lesFraisHF); $i++) {
+            $montantTotalFraisHF += $lesFraisHF[$i]['montant'];
+        }
+    
+        return $montantTotalFraisHF;
+    }
+
+    /**
+    * Calcul le total des frais forfait d'un tableau de frais F envoyé en param.
+    *
+    * @param Array $lesFraisF    tableau associatif des frais forfait
+    * @return Float              montant total € des frais forfait
+    */
+    public function calculMontantTotalFraisF($lesFraisF)
+    {
+        //declaration
+        $montantTotalFraisF = 0; //contiendra le total € des frais hors forfait
+        $montantIdFrais = $this->getMontantDesIdFrais(); //valorisé avec les montants réglementés des frais F
+        $lesClesforfaitF = array_keys($lesFraisF); //récupération de toutes les cles des frais F
+        $lesClesIdFrais = array_keys($montantIdFrais); //récupération de toutes les cles
+                                                       //des montants de frais réglementés
+         
+        //calcul du montant total des frais forfait
+        //quantité de frais * montant réglementaire
+        foreach ($lesClesIdFrais as $unMontantReglementaire) {
+            foreach ($lesClesforfaitF as $unIdFraisF) {
+                if ($lesFraisF[$unIdFraisF]['idfrais'] == $montantIdFrais[$unMontantReglementaire]['idfrais']) {
+                    $qte = $lesFraisF[$unIdFraisF]['quantite'];
+                    $montantReglementaire = $montantIdFrais[$unMontantReglementaire]['montant'];
+                    $montantTotalFraisF += $qte * $montantReglementaire;
+                }
+            }
+        }
+        return $montantTotalFraisF;
+    }
+
+    /**
+     * calcul le montant validé d'une fiche de frais (forfait et hors forfait)
+     * pour un visiteur et un mois précis
+     *
+     * @param String $idVisiteur    le visiteur
+     * @param String $mois          le mois
+     * @param Array $lesFraisF      tableau associatif des frais forfait
+     * @param Array $lesFraisHF     tableau associatif des frais hors forfait
+     */
+    public function majMontantFicheFrais($idVisiteur, $mois, $lesFraisF, $lesFraisHF)
+    {
+        //récupération des calculs de totaux frais F et frais HF
+        $montantTotalFraisF = $this->calculMontantTotalFraisF($lesFraisF);
+        $montantTotalFraisHF = $this->calculMontantTotalFraisHF($lesFraisHF);
+        $montantTotal = $montantTotalFraisF + $montantTotalFraisHF;
+        
+        //requête update table fichefrais pour affecter le montant validé
+        //des frais pour un visiteur et un mois précis
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+            'UPDATE fichefrais '
+            . 'SET fichefrais.montantvalide = :unMontant '
+            . 'WHERE fichefrais.idvisiteur = :unVisiteur '
+            . 'AND fichefrais.mois = :unMois'
+        );
+        $requetePrepare->bindParam(':unMontant', $montantTotal, PDO::PARAM_STR);
+        $requetePrepare->bindParam(':unVisiteur', $idVisiteur, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unMois', $mois, PDO::PARAM_STR);
         $requetePrepare->execute();
     }

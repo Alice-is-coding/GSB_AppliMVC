@@ -154,8 +154,13 @@ switch ($action) {
         header("Content-Type: application/json; charset=UTF-8");
         $idVisiteur = json_decode($_GET['q'], false);
         $mois = json_decode($_GET['m'], false);
+        //récupération des frais forfait pour un visiteur à un mois précis
+        $lesFraisForfait = $pdo->getLesFraisForfait($idVisiteur, $mois);
+        //récupération des frais hors forfait non refusés ni reportés pour un visiteur à un mois précis
+        $lesFraisHorsForfait = $pdo->getLesFraisHorsForfaitPourValidation($idVisiteur, $mois);
         //le syst. passe la fiche à l'état 'Validée' + màj la date de modif de fiche
         $pdo->majEtatFicheFrais($idVisiteur, (string)$mois, "VA");
+        $pdo->majMontantFicheFrais($idVisiteur, $mois, $lesFraisForfait, $lesFraisHorsForfait);
         echo json_encode('Validation OK.'); //encodage de la réponse
         break;
 }
