@@ -62,7 +62,7 @@
                             <li <?php if ($uc == 'etatFrais') { ?>
                                 class="active"
                                 <?php } ?>>
-                                <a href="index.php?uc=etatFrais&action=suivreEtatFrais">
+                                <a href="index.php?uc=suiviFrais&action=selectionnerEtatFrais">
                                     <span class="glyphicon glyphicon-euro"></span>
                                     Suivre le paiement des fiches de frais
                                 </a>

@@ -40,5 +40,5 @@ switch ($action) {
         $montantValide = $lesInfosFicheFrais['montantValide'];
         $nbJustificatifs = $lesInfosFicheFrais['nbJustificatifs'];
         $dateModif = dateAnglaisVersFrancais($lesInfosFicheFrais['dateModif']);
-        include 'vues/v_etatFrais.php';
+        include 'vues/v_etatFrais_visiteur.php';
 }

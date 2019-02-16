@@ -1,16 +1,13 @@
 <?php
 /**
- * Gestion de l'affichage des frais
+ * Gestion de la validation des frais
  *
  * PHP Version 7
  *
  * @category  PPE
  * @package   GSB
- * @author    Réseau CERTA <contact@reseaucerta.org>
- * @author    José GIL <jgil@ac-nice.fr>
- * @copyright 2017 Réseau CERTA
+ * @author    Alice BORD <alice.bord1@gmail.com>
  * @license   Réseau CERTA
- * @version   GIT: <0>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 
@@ -27,7 +24,7 @@ switch ($action) {
         header("Content-Type: application/json; charset=UTF-8");
         $q = json_decode($_GET['q'], false); //contient le visiteur sélectionné dans la liste
         $mois = "";
-        $lesMois = $pdo->getMoisPourValidation($q); //récupère les mois d'un visiteur
+        $lesMois = $pdo->getMoisPourCompta($q, 'CL'); //récupère les mois d'un visiteur
                                                     //dont l'état est à "CL"
         echo json_encode($lesMois); //encodage de la réponse
         break;
@@ -161,6 +158,6 @@ switch ($action) {
         //le syst. passe la fiche à l'état 'Validée' + màj la date de modif de fiche
         $pdo->majEtatFicheFrais($idVisiteur, (string)$mois, "VA");
         $pdo->majMontantFicheFrais($idVisiteur, $mois, $lesFraisForfait, $lesFraisHorsForfait);
-        echo json_encode('Validation OK.'); //encodage de la réponse
+        echo json_encode('Mise à jour fichefrais.idetat OK.'); //encodage de la réponse
         break;
 }

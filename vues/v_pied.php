@@ -14,9 +14,11 @@
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 ?>
+<div id='scriptsJs'>
     <script src="js/scripts.js"></script>
     <script src="js/libs/jquery/jquery.min.js"></script>
-    </body>
+</div>
+</body>
 </html>
 
 

@@ -50,6 +50,9 @@ switch ($uc) {
     case 'etatFrais':
         include 'controleurs/c_etatFrais.php';
         break;
+    case 'suiviFrais':
+        include 'controleurs/c_suiviFrais.php';
+        break;
     case 'deconnexion':
         include 'controleurs/c_deconnexion.php';
         break;

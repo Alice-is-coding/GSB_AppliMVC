@@ -10,29 +10,23 @@
  */
 ?>
 <div class="row">
-    <div id="resultat">
-    </div>
     <div class="col-md-5">
-         <form action="index.php?uc=validerFrais&action=selectionnerMois" 
-               method="post" role="form">
-            <div class="form-group">
-                <label for="lstVisiteurs" accesskey="n">Choisir un visiteur:</label>
-                <select name="Visiteurs" class="form-control" id="lstVisiteurs" onchange="selectMoisDispos(this.value)">
-                        "> 
-                    <option value="0"></option>
-                    <?php
-                    foreach ($lesVisiteurs as $unVisiteur) {
-                        $unPrenom = htmlspecialchars($unVisiteur['prenom']);
-                        $unNom = htmlspecialchars($unVisiteur['nom']);
-                        $unId = htmlspecialchars($unVisiteur['idVisiteur']);
-                        ?>
-                        <option value="<?php echo $unId ?>"><?php echo $unNom.' '.$unPrenom ?></option>
-                        <?php
-                    }
+        <div class="form-group">
+            <label for="lstVisiteurs" accesskey="n">Choisir un visiteur:</label>
+            <select name="Visiteurs" class="form-control" id="lstVisiteurs" onchange="selectMoisDispos()">
+                     
+                <option value="0"></option>
+                <?php
+                foreach ($lesVisiteurs as $unVisiteur) {
+                    $unPrenom = htmlspecialchars($unVisiteur['prenom']);
+                    $unNom = htmlspecialchars($unVisiteur['nom']);
+                    $unId = htmlspecialchars($unVisiteur['idVisiteur']);
                     ?>
-                </select>
-            </div>
-        </form>
+                    <option value="<?php echo $unId ?>"><?php echo $unNom.' '.$unPrenom ?></option>
+                    <?php
+                }
+                ?>
+            </select>
+        </div>
     </div>
 </div>
-
