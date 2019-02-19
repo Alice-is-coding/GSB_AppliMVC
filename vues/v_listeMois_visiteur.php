@@ -1,6 +1,6 @@
 <?php
 /**
- * Vue Liste des mois
+ * Vue Liste des mois côté visiteurs
  *
  * PHP Version 7
  *

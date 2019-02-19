@@ -1,12 +1,16 @@
 <?php
 /**
- * Gestion des visiteurs
+ * Liste des visiteurs
  *
  * PHP Version 7
  *
  * @category  PPE
  * @package   GSB
- * @author    Alice B.
+ * @author    Réseau CERTA <contact@reseaucerta.org>
+ * @author    Alice BORD <alice.bord1@gmail.com>
+ * @copyright 2017 Réseau CERTA
+ * @license   Réseau CERTA
+ * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 ?>
 <div class="row">

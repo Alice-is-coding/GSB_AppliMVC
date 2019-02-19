@@ -1,6 +1,6 @@
 <?php
 /**
- * Vue Liste des frais au forfait
+ * Vue Liste des frais au forfait des visiteurs
  *
  * PHP Version 7
  *

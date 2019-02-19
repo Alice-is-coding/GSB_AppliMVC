@@ -36,8 +36,20 @@
  * @version   Release: 1.0
  * @link      http://www.php.net/manual/fr/book.pdo.php PHP Data Objects sur php.net
  */
-class PdoGsb {
-
+class PdoGsb
+{
+    /**
+     *
+     * @var String $serveur      Information de connexion  au serveur de base de données
+     * @var String $bdd          Nom de la base de données
+     * @var String $user         Nom d'utilisateur pour connexion à la base de données
+     * @var String $mdp          Mot de passe de connexion
+     * @var PDO $monPdo          Instance de la classe PDO pour se connecter à la base de données
+     * @var PdoGsb $monPdoGsb    Unique instance de la classe PdoGsb pour 
+     *                           pouvoir utiliser les méthodes de la classe et 
+     *                           intéragir avec la base de données
+     * 
+     */
     private static $serveur = 'mysql:host=localhost';
     private static $bdd = 'dbname=gsb_frais';
     private static $user = 'userGsb';
@@ -52,9 +64,9 @@ class PdoGsb {
     private function __construct()
     {
         PdoGsb::$monPdo = new PDO(
-                PdoGsb::$serveur . ';' . PdoGsb::$bdd,
-                PdoGsb::$user,
-                PdoGsb::$mdp
+            PdoGsb::$serveur . ';' . PdoGsb::$bdd,
+            PdoGsb::$user,
+            PdoGsb::$mdp
         );
         PdoGsb::$monPdo->query('SET CHARACTER SET utf8');
     }
@@ -309,8 +321,9 @@ class PdoGsb {
     }
 
     /**
-     * requête update de mise à jour d'un frais HF bien précis
+     * Met à jour un frais HF bien précis
      * tronque le libelle si jamais il dépasse maxLength du champ libelle
+     * 
      * @param array $lesFrais liste des frais HF ({date: data ; libelle: data ; montant: data})
      * @param integer $id idLigne
      */
@@ -341,6 +354,7 @@ class PdoGsb {
 
     /**
      * Effectue la requête de modification pour préciser [REFUSE] devant un frais refusé
+     * 
      * @param integer $id l'id du visiteur
      */
     public function refuserFraisHorsForfait($id)
@@ -355,9 +369,10 @@ class PdoGsb {
     }
 
     /**
-     * reporte le frais HF, dont l'id est passé en paramètre, au mois suivant
+     * Reporte le frais HF, dont l'id est passé en paramètre, au mois suivant
+     * 
      * @param Integer $id
-     * @param String $mois
+     * @param String $idVisiteur
      */
     public function reporterFraisHorsForfait($id, $idVisiteur)
     {
@@ -379,12 +394,12 @@ class PdoGsb {
      * même requête que fonction creeNouvelleLigneFrais SAUF qu'il n'y a pas de
      * passage de l'état CR à CL puisque la fiche actuelle doit encore être en
      * Etat CR
+     * 
      * @param String $idVisiteur
      * @param String $mois
      */
     public function creerNouvelleLigneFraisPourReport($idVisiteur, $mois)
     {
-
         $requetePrepare = PdoGsb::$monPdo->prepare(
             'INSERT INTO fichefrais (idvisiteur,mois,nbjustificatifs,'
             . 'montantvalide,datemodif,idetat) '
@@ -667,7 +682,7 @@ class PdoGsb {
     }
 
     /**
-     * Calcul le total des frais hors forfait d'un tableau de frais HF envoyé en param.
+     * Calcul le total des frais hors forfait d'un tableau de frais HF envoyé en argument
      *
      * @param Array $lesFraisHF   tableau associatif des frais hors forfait
      * @return Float              montant total € des frais hors forfait
@@ -713,7 +728,7 @@ class PdoGsb {
     }
 
     /**
-     * calcul le montant validé d'une fiche de frais (forfait et hors forfait)
+     * Calcul le montant validé d'une fiche de frais (forfait et hors forfait)
      * pour un visiteur et un mois précis
      *
      * @param String $idVisiteur    le visiteur
@@ -765,6 +780,7 @@ class PdoGsb {
 
     /**
      * Retourne un tableau associatif des fiches de frais en fonction d'un etat choisi
+     * 
      * @param String $etat
      * @return Array des fiches de frais
      */
@@ -783,6 +799,13 @@ class PdoGsb {
         return $requetePrepare->fetchAll();
     }
 
+    /**
+     * Récupère les mois disponibles pour un visiteur et un état passés en argument
+     * 
+     * @param String $idvisiteur   Visiteur concerné
+     * @param String $etat         Etat souhaité de la fiche
+     * @return Array               Tableau associatif des mois disponibles pour ce visiteur et cet état
+     */
     public function getMoisPourCompta($idvisiteur, $etat)
     {
         $requetePrepare = PdoGsb::$monPdo->prepare(

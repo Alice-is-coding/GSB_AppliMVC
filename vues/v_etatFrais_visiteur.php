@@ -1,6 +1,6 @@
 <?php
 /**
- * Vue État de Frais
+ * Vue État de Frais des visiteurs
  *
  * PHP Version 7
  *
