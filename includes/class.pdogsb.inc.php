@@ -9,6 +9,7 @@
  * @package   GSB
  * @author    Cheri Bibi - Réseau CERTA <contact@reseaucerta.org>
  * @author    José GIL - CNED <jgil@ac-nice.fr>
+ * @author    Alice BORD <alice.bord1@gmail.com>
  * @copyright 2017 Réseau CERTA
  * @license   Réseau CERTA
  * @version   GIT: <0>
@@ -38,23 +39,22 @@
  */
 class PdoGsb
 {
-    /**
-     *
-     * @var String $serveur      Information de connexion  au serveur de base de données
-     * @var String $bdd          Nom de la base de données
-     * @var String $user         Nom d'utilisateur pour connexion à la base de données
-     * @var String $mdp          Mot de passe de connexion
-     * @var PDO $monPdo          Instance de la classe PDO pour se connecter à la base de données
-     * @var PdoGsb $monPdoGsb    Unique instance de la classe PdoGsb pour 
-     *                           pouvoir utiliser les méthodes de la classe et 
-     *                           intéragir avec la base de données
-     * 
-     */
+
+    /** @var String $serveur  Information de connexion  au serveur de base de données*/
     private static $serveur = 'mysql:host=localhost';
+    /** @var String $bdd       Nom de la base de données */
     private static $bdd = 'dbname=gsb_frais';
+    /** @var String $user      Nom d'utilisateur pour connexion à la base de données */
     private static $user = 'userGsb';
+    /** @var String $mdp       Mot de passe de connexion */
     private static $mdp = 'secret';
+    /** @var PDO $monPdo       Instance de la classe PDO pour se connecter à la base de données */
     private static $monPdo;
+    /**
+     * @var PdoGsb $monPdoGsb  Unique instance de la classe PdoGsb pour
+     *                         pouvoir utiliser les méthodes de la classe et
+     *                         intéragir avec la base de données
+     */
     private static $monPdoGsb = null;
 
     /**
@@ -323,7 +323,7 @@ class PdoGsb
     /**
      * Met à jour un frais HF bien précis
      * tronque le libelle si jamais il dépasse maxLength du champ libelle
-     * 
+     *
      * @param array $lesFrais liste des frais HF ({date: data ; libelle: data ; montant: data})
      * @param integer $id idLigne
      */
@@ -354,7 +354,7 @@ class PdoGsb
 
     /**
      * Effectue la requête de modification pour préciser [REFUSE] devant un frais refusé
-     * 
+     *
      * @param integer $id l'id du visiteur
      */
     public function refuserFraisHorsForfait($id)
@@ -362,7 +362,8 @@ class PdoGsb
         $requetePrepare = PdoGsb::$monPdo->prepare(
             'UPDATE lignefraishorsforfait '
             . 'SET lignefraishorsforfait.libelle = CONCAT("[REFUSE] ", lignefraishorsforfait.libelle) '
-            . 'WHERE lignefraishorsforfait.id = :unId'
+            . 'WHERE lignefraishorsforfait.id = :unId '
+            . 'AND lignefraishorsforfait.libelle NOT LIKE "%[REFUSE]%"'
         );
         $requetePrepare->bindParam(':unId', $id, PDO::PARAM_INT);
         $requetePrepare->execute();
@@ -370,7 +371,7 @@ class PdoGsb
 
     /**
      * Reporte le frais HF, dont l'id est passé en paramètre, au mois suivant
-     * 
+     *
      * @param Integer $id
      * @param String $idVisiteur
      */
@@ -394,7 +395,7 @@ class PdoGsb
      * même requête que fonction creeNouvelleLigneFrais SAUF qu'il n'y a pas de
      * passage de l'état CR à CL puisque la fiche actuelle doit encore être en
      * Etat CR
-     * 
+     *
      * @param String $idVisiteur
      * @param String $mois
      */
@@ -780,7 +781,7 @@ class PdoGsb
 
     /**
      * Retourne un tableau associatif des fiches de frais en fonction d'un etat choisi
-     * 
+     *
      * @param String $etat
      * @return Array des fiches de frais
      */
@@ -801,7 +802,7 @@ class PdoGsb
 
     /**
      * Récupère les mois disponibles pour un visiteur et un état passés en argument
-     * 
+     *
      * @param String $idvisiteur   Visiteur concerné
      * @param String $etat         Etat souhaité de la fiche
      * @return Array               Tableau associatif des mois disponibles pour ce visiteur et cet état

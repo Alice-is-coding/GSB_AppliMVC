@@ -1,10 +1,11 @@
-/* 
- * Gestion des visiteurs
- * 
- * @category PPE
- * @package GSB
- * @author Alice B. 
- * 
+ /*
+  * 
+  * Gestion dynamique du site côté comptables avec javaScript
+  *  
+ * @category  PPE
+ * @package   GSB
+ * @author    Alice BORD <alice.bord1@gmail.com>
+ * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 
 /**
@@ -956,7 +957,7 @@ function setModifs(className, action) {
             if (action === "validerMajFraisHorsForfait") {
                 xhr.open("POST", "controleurs/c_validerFrais.php?lesFrais=" + JSON.stringify(lesFrais) + "&ligne=" + JSON.parse(parseInt(className)) + "&action=" + action + "", true);
             } else if (action === "refuserFraisHorsForfait") {
-                xhr.open("POST", "controleurs/c_validerFrais.php?ligne=" + JSON.parse(parseInt(className)) + "&action=" + action + "", true);
+                xhr.open("POST", "controleurs/c_validerFrais.php?ligne=" + JSON.parse(parseInt(className)) + "&action=" + action + "", false);
             } else {
                 xhr.open("POST", "controleurs/c_validerFrais.php?q=" + JSON.stringify(visiteurSelected) + "&m=" + JSON.parse(moisSelected) + "&ligne=" + JSON.parse(parseInt(className)) + "&action=" + action + "", false);
             }

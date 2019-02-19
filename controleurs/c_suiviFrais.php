@@ -1,12 +1,12 @@
 <?php
 /**
- * Gestion de la validation des frais
- *
- * PHP Version 7
+ * Gestion du suivi des frais par les comptables
  *
  * @category  PPE
  * @package   GSB
+ * @author    Réseau CERTA <contact@reseaucerta.org>
  * @author    Alice BORD <alice.bord1@gmail.com>
+ * @copyright 2017 Réseau CERTA
  * @license   Réseau CERTA
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
@@ -40,7 +40,6 @@ switch ($action) {
         echo json_encode("Mise à jour fichefrais.idetat OK.");
         break;
     case 'infosFrais':
-        //vient de la fonction js selectInfosFicheFrais
         require_once '../includes/class.pdogsb.inc.php';
         header('Content-Type: application/json; charset=UTF-8'); //entête HTTP : informe de l'utilisation du format json 
         $pdo = PdoGsb::getPdoGsb();

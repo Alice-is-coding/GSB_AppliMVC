@@ -13,6 +13,8 @@
  * @version   GIT: <0>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
+namespace gsb;
+
 ?>
 <h2>Mes fiches de frais</h2>
 <div class="row">

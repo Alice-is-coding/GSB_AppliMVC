@@ -13,6 +13,7 @@
  * @version   GIT: <0>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
+namespace gsb;
 ?>
 <div class="row">
     <div class="col-md-6 col-md-offset-3">

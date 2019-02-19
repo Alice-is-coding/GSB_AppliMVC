@@ -12,6 +12,8 @@
  * @license   Réseau CERTA
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
+namespace gsb;
+
 ?>
 <div class="row"> 
     <h2 class="compta">Valider la fiche de frais</h2>

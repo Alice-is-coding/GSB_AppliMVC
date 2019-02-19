@@ -13,6 +13,7 @@
  * @version   GIT: <0>
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
+namespace gsb;
 ?>
 <hr>
 <div class="panel panel-primary">

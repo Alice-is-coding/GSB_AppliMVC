@@ -1,14 +1,17 @@
 <?php
 /**
- * Gestion de la validation des frais
+ * Gestion de la validation des frais par les comptables
  *
  * PHP Version 7
  *
  * @category  PPE
  * @package   GSB
+ * @author    Réseau CERTA <contact@reseaucerta.org>
  * @author    Alice BORD <alice.bord1@gmail.com>
+ * @copyright 2017 Réseau CERTA
  * @license   Réseau CERTA
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
+ * 
  */
 
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);

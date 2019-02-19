@@ -12,6 +12,8 @@
  * @license   Réseau CERTA
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
+namespace gsb;
+
 ?>
 <hr>
 <div class="row">
