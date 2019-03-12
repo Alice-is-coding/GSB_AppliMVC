@@ -193,7 +193,12 @@ function reinitialiser() {
     document.getElementById('lstVisiteurs').selectedIndex = 0;
     document.getElementById('lstEtats').selectedIndex = 0;
     document.getElementById('lstMois').innerHTML = "";
-    resetValiderFicheFrais();
+    
+    if($('#lesEtats') == null) {
+        resetValiderFicheFrais();
+    } else {
+        resetSuiviPaiementFrais();
+    }
 }
 
 /**
