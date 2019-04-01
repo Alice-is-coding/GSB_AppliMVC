@@ -14,6 +14,7 @@
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 namespace gsb;
+
 ?>
 <div class="row">    
     <h2>Renseigner ma fiche de frais du mois 
