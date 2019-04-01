@@ -14,6 +14,7 @@
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
  */
 namespace gsb;
+
 ?>
 <div class="alert alert-danger" role="alert">
     <?php

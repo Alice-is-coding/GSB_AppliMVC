@@ -11,7 +11,7 @@
  * @copyright 2017 Réseau CERTA
  * @license   Réseau CERTA
  * @link      http://www.reseaucerta.org Contexte « Laboratoire GSB »
- * 
+ *
  */
 
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
