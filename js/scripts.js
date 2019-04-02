@@ -134,6 +134,8 @@ function resetSuiviPaiementFrais() {
     // Si message 'pas de facture pour ce visiteur ce mois' affiché : 
     // On le supprime pour faire un refresh.
     supprMessageNonFiche();
+    //On cache le button de validation 
+    hidingBtnValidation();
 }
 
 /**
@@ -188,7 +190,7 @@ function reinitialiser() {
     document.getElementById('lstEtats').selectedIndex = 0;
     document.getElementById('lstMois').innerHTML = "";
     
-    if($('#lesEtats') == null) {
+    if($('#lesEtats') === null) {
         resetValiderFicheFrais();
     } else {
         resetSuiviPaiementFrais();
