@@ -391,18 +391,43 @@ class PdoGsb
     }
 
     /**
+     * Récupère une ligne de frais hors forfait.
+     * 
+     * @param Integer $ligne Contient la ligne concernée.
+     * @return Array         Un tableau avec l'ensemble des infos pour cette ligne.
+     */
+    public function ligneFraisHorsForfait($ligne) {
+        $requetePrepare = PdoGsb::$monPdo->prepare(
+                'SELECT * '
+                . 'FROM lignefraishorsforfait '
+                . 'WHERE lignefraishorsforfait.id = :unId'
+                );
+        $requetePrepare->bindParam(':unId', $ligne, PDO::PARAM_INT);
+        $requetePrepare->execute();
+        return $requetePrepare->fetchAll();
+    }
+    
+    /**
      * Effectue la requête de modification pour préciser [REFUSE] devant un frais refusé.
      *
      * @param integer $id L'id du visiteur.
      */
     public function refuserFraisHorsForfait($id)
     {
+        $laLigneFraisHF = $this->ligneFraisHorsForfait($id);
+        foreach ($laLigneFraisHF as $ligne) {
+            $leLibelle = '[REFUSE]' . $ligne['libelle'];
+        }
+        if(strlen($leLibelle) > 100) {
+            $leLibelle = substr($leLibelle, 0, 100);
+        }
         $requetePrepare = PdoGsb::$monPdo->prepare(
             'UPDATE lignefraishorsforfait '
-            . 'SET lignefraishorsforfait.libelle = CONCAT("[REFUSE] ", lignefraishorsforfait.libelle) '
+            . 'SET lignefraishorsforfait.libelle = :unLibelleRefuse '
             . 'WHERE lignefraishorsforfait.id = :unId '
             . 'AND lignefraishorsforfait.libelle NOT LIKE "%[REFUSE]%"'
         );
+        $requetePrepare->bindParam(':unLibelleRefuse', $leLibelle, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unId', $id, PDO::PARAM_INT);
         $requetePrepare->execute();
     }
