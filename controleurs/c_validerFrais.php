@@ -17,7 +17,7 @@
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
 switch ($action) {
     case 'selectionnerVisiteur':
-        $lesVisiteurs = $pdo->getLesVisiteurs();
+        $lesVisiteurs = $pdo->getLesVisiteurs('CL');
         include 'vues/v_listeVisiteurs.php';
         include 'vues/v_listeMois_comptable.php';
         break;

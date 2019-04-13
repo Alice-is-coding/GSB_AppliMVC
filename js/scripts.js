@@ -33,6 +33,16 @@ function resetLstMois() {
 }
 
 /**
+ * Vide la liste des visiteurs disponibles si elle possède effectivement des visiteurs.
+ * 
+ * @returns {void}
+ */
+function resetLstVisiteurs() {
+    if (document.getElementById('lstVisiteurs').length > 0) {
+        document.getElementById('lstVisiteurs').innerHTML = '';
+    }
+}
+/**
  * Supprime le message stipulant la non présence de fiche pour un visiteur à un mois donné.
  * 
  * @returns {void}
@@ -208,6 +218,67 @@ function hidingBtnValidation() {
 }
 
 /**
+ * Rempli la liste des visiteurs pour un état sélectionné et rempli la liste des 
+ * mois disponibles pour le premier visiteur sélectionné par défaut.
+ * 
+ * @param {String} etat    Etat sélectionné dans la liste des états.
+ * @returns {void}
+ */
+function selectVisiteursDispos(etat) {
+    //Déclarations.
+    var maListeEtats = document.getElementById('lstEtats');
+    xhr = new XMLHttpRequest();
+    
+    // Reset de la page relative à "Suivre le paiement des fiches de frais".
+    resetSuiviPaiementFrais();
+    // Remise à zéro de la liste des visiteurs.
+    resetLstVisiteurs();
+    // Remise à zéro de la liste des mois.
+    resetLstMois();
+    // On cache le bouton de validation.
+    hidingBtnValidation();
+    
+      // Exé d'une fonction au changement d'état de xhr.
+    xhr.onreadystatechange = function () {
+        console.log(this); // Pour infos et debug.
+
+        // Si etat == 4 (la réponse du serveur a été reçue dans son intégralité,
+        // Peut maintenant être traitée),
+        // && statut = 200 (OK) alors :
+        if (this.readyState === 4 && this.status === 200) {
+            // On parse la réponse (format txt) en json pour pouvoir utiliser la 
+            // réponse comme un objet json et agir dessus.
+            var myObj = JSON.parse(this.responseText);
+            console.log(myObj); // Pour infos et debug.
+
+            // Si pas de visiteurs pour l'état sélectionné :
+            if (myObj.length === 0 && maListeEtats.selectedIndex > 0) {
+                // Création d'un h5 pour affichage message.
+                afficheMessagePasDeFiches("Pas de fiches pour cet état.");
+
+            } else if (myObj.length !== 0 && maListeEtats.selectedIndex > 0) {
+                // Sinon création des éléments <option> dans la liste lstVisiteurs correspondant
+                // à tous  les visiteurs qui ont des fiches de frais pour cet état.
+                alimenteListeVisiteurs(myObj);
+                // Cn configure le btn validation si l'on ne se trouve pas dans la section "Remboursée" qui ne fait que recenser les fiches 
+                // remboursées pour chaques visiteurs --> permet de gérer un historique des remboursement.
+                if (getOptionSelected('lstEtats') !== "RB") {
+                    // Configuration du libelle + affichage + attribut onclick du bouton de validation.
+                    showBtnValidation(etat);
+                }
+                // Envoie d'une requête ajax par la fonction selectFicheFrais pour récupérer les frais F relatives au mois sélectionné par défaut.
+                selectMoisDispos();
+            }
+        }
+    };
+    // Si un état est sélectionné :
+    if (maListeEtats.selectedIndex > 0) {
+        xhr.open("GET", "controleurs/c_suiviFrais.php?etat=" + JSON.stringify(etat) + "&action=selectionnerVisiteurs", true);
+        xhr.send();
+    }
+}
+
+/**
  * Sélection dynamique des mois disponibles pour un visiteur par une procédure Ajax +
  * Alimentation de la liste à la volée +
  * Appel selectFicheFraisForfait pour affichage de la fiche du mois sélectionné par défaut.
@@ -251,11 +322,13 @@ function selectMoisDispos() {
             console.log(myObj); // Pour infos et debug.
 
             // Si pas de mois pour ce visiteur et visiteur sélectionné :
-            if (myObj.length === 0 && maListeVisiteurs.selectedIndex > 0) {
+            if (myObj.length === 0 && maListeVisiteurs.selectedIndex > 0 && !estOngletSuiviPaiementFrais) {
                 // Création d'un h5 pour affichage message.
-                afficheMessagePasDeFiches();
-
-            } else if (myObj.length !== 0 && maListeVisiteurs.selectedIndex > 0) {
+                afficheMessagePasDeFiches("Pas de fiche de frais pour ce visiteur ce mois-ci");
+            } else if (myObj.length === 0 && estOngletSuiviPaiementFrais) {
+                // Création d'un h5 pour affichage message.
+                afficheMessagePasDeFiches("Pas de fiche de frais pour ce visiteur");
+            } else if (myObj.length !== 0) {
                 // Sinon création des éléments <option> dans la liste lstMois correspondant
                 // à tous  les mois dispos pour ce visiteur.
                 alimenteListeMois(myObj);
@@ -284,7 +357,7 @@ function selectMoisDispos() {
         }
     };
     // Si lstEtats existe && un visiteur est sélectionné && un état est sélectionné :
-    if ($('#lstEtats').length && document.getElementById('lstVisiteurs').selectedIndex > 0 && document.getElementById('lstEtats').selectedIndex > 0) {
+    if ($('#lstEtats').length && document.getElementById('lstVisiteurs').length > 0 && document.getElementById('lstEtats').selectedIndex > 0) {
         // Nous sommes dans la partie suivre paiement fiches de frais.
         xhr.open("GET", "controleurs/c_suiviFrais.php?q=" + JSON.stringify(visiteurSelected) + "&etat=" + JSON.stringify(getOptionSelected('lstEtats')) + "&action=selectionnerMois", true);
         xhr.send();
@@ -293,6 +366,27 @@ function selectMoisDispos() {
         xhr.open("GET", "controleurs/c_validerFrais.php?q=" + JSON.stringify(visiteurSelected) + "&action=selectionnerMois", true);
         xhr.send();
     }
+}
+
+/**
+ * Alimentation de la liste id="lstVisiteurs" : 
+ * Crée à la volée les éléments option et les rattache à lstVisiteurs.
+ * 
+ * @param {json} myObj    Contient la liste des visiteurs.
+ * @returns {void}
+ */
+function alimenteListeVisiteurs(myObj) {
+    
+    var maListeVisiteurs = document.getElementById('lstVisiteurs');
+    // Création des éléments <option> dans la liste lstMois correspondant à tous  les mois dispos pour un visiteur.
+    for (var x in myObj) {
+        visiteur = myObj[x].nom + ' ' + myObj[x].prenom; // Forme : nom prenom .
+        var option = document.createElement('option'); // Création élément option.
+        option.value = myObj[x].idVisiteur; // Forme : 'anneeMois' .
+        option.textContent = visiteur;  // Contient la valeur de la variable date.
+        // Elément lstMois <select> parent de l'élément <option> enfant.
+        maListeVisiteurs.appendChild(option);
+    }    
 }
 
 /**
@@ -1053,10 +1147,10 @@ function majEtatFicheFrais(etat) {
  * 
  * @returns {void}
  */
-function afficheMessagePasDeFiches() {
+function afficheMessagePasDeFiches(strmessage) {
     var message = document.createElement('h5'); // Contiendra le message.
     message.id = "vide";
-    message.textContent = "Pas de fiche de frais pour ce visiteur ce mois-ci";
+    message.textContent = strmessage;
     document.getElementById('lesMois').appendChild(message);
     // Hidden du button validerFicheFrais.
     document.getElementById('validation').setAttribute('style', 'display: none');

@@ -22,7 +22,7 @@ namespace gsb;
             <select name="Visiteurs" class="form-control" id="lstVisiteurs" onchange="selectMoisDispos()">
                      
                 <option value="0"></option>
-                <?php
+                 <?php
                 foreach ($lesVisiteurs as $unVisiteur) {
                     $unPrenom = htmlspecialchars($unVisiteur['prenom']);
                     $unNom = htmlspecialchars($unVisiteur['nom']);

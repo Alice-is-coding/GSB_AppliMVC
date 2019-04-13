@@ -14,11 +14,19 @@
 $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
 switch ($action) {
     case 'selectionnerEtatFrais':
-        $lesVisiteurs = $pdo->getLesVisiteurs();
+        //$lesVisiteurs = $pdo->getLesVisiteurs();
         $lesEtats = $pdo->getEtatsPourSuiviPaiement();
-        include 'vues/v_listeVisiteurs.php';
         include 'vues/v_listeEtats.php';
+        include 'vues/v_listeVisiteurs.php';      
         include 'vues/v_listeMois_comptable.php';
+        break;
+    case 'selectionnerVisiteurs':
+        require_once '../includes/class.pdogsb.inc.php';
+        $pdo = PdoGsb::getPdoGsb();
+        header('Content-Type: application/json; charset=UTF-8');
+        $etat = json_decode($_GET['etat'], false);
+        $visiteurs = $pdo->getLesVisiteurs($etat);
+        echo json_encode($visiteurs);
         break;
     case 'selectionnerMois':
         require_once '../includes/class.pdogsb.inc.php';

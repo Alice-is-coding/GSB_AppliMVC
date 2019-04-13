@@ -19,7 +19,7 @@ namespace gsb;
     <div class="col-md-4">
         <div id="lesEtats" class="form-group">
             <label for="lstEtat" accesskey="n">Etat : </label>
-            <select id="lstEtats" name="Etat" class="form-control">
+            <select id="lstEtats" name="Etat" class="form-control" onchange="selectVisiteursDispos(this.value)">
                 <option value="0"></option>
                 <?php
                 foreach ($lesEtats as $unEtat) {
@@ -32,7 +32,5 @@ namespace gsb;
                 ?>
             </select>
         </div>
-        <button class="btn btn-success" type="button" onclick="selectMoisDispos()">Valider</button>
-        <button class="btn btn-danger" type="reset" onclick="reinitialiser()">Réinitialiser</button>
     </div>
 </div>

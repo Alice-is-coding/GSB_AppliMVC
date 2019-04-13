@@ -160,13 +160,18 @@ class PdoGsb
      *
      * @return Id, nom, prenom des visiteurs médicaux.
      */
-    public function getLesVisiteurs()
+    public function getLesVisiteurs($etat)
     {
         $requetePrepare = PdoGsb::$monPdo->prepare(
-            'SELECT id as idVisiteur, nom as nom, prenom as prenom '
-            . 'FROM utilisateur '
-            . 'WHERE utilisateur.idTypeusr = 1'
+            'SELECT DISTINCT utilisateur.id as idVisiteur, '
+            . 'utilisateur.nom as nom, '
+            . 'utilisateur.prenom as prenom '
+            . 'FROM fichefrais JOIN utilisateur '
+            . 'ON fichefrais.idvisiteur = utilisateur.id '
+            . 'WHERE utilisateur.idTypeusr = 1 '
+            . 'AND fichefrais.idetat = :unEtat'
         );
+        $requetePrepare->bindParam(':unEtat', $etat, PDO::PARAM_STR);
         $requetePrepare->execute();
         return $requetePrepare->fetchAll();
     }
