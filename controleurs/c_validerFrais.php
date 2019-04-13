@@ -138,7 +138,8 @@ switch ($action) {
         $mois = json_decode($_GET['m'], false);
         $ligne = json_decode($_GET['ligne'], false);
         //récupère le mois suivant
-        $moisSuivant = getMoisSuivant(getMois(date('d/m/Y')));
+        //$moisSuivant = getMoisSuivant(getMois(date('d/m/Y')));
+        $moisSuivant = getMoisSuivant($mois);
         //on crée une nouvelle fiche de frais pour le visiteur si jamais elle n'existe pas
         if ($pdo->estPremierFraisMois($idVisiteur, $moisSuivant)) {
             $pdo->creerNouvelleLigneFraisPourReport($idVisiteur, $moisSuivant);
