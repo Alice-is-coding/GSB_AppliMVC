@@ -443,16 +443,16 @@ class PdoGsb
      * @param Integer $id
      * @param String $idVisiteur
      */
-    public function reporterFraisHorsForfait($id, $idVisiteur)
+    public function reporterFraisHorsForfait($id, $idVisiteur, $moisSuivant)
     {
         // Requête update pour modifier le mois de la ligne concernée afin que le frais HF soit reporté.
         $requetePrepare = PdoGsb::$monPdo->prepare(
             'UPDATE lignefraishorsforfait '
-            . 'SET lignefraishorsforfait.mois = (SELECT MAX(fichefrais.mois) '
-            . 'FROM fichefrais '
-            . 'WHERE fichefrais.idvisiteur = :unVisiteur) '
+            . 'SET lignefraishorsforfait.mois = :unMois '
+            . 'WHERE lignefraishorsforfait.idvisiteur = :unVisiteur '
             . 'WHERE lignefraishorsforfait.id = :unId '
         );
+        $requetePrepare->bindParam(':unMois', $moisSuivant, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unVisiteur', $idVisiteur, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unId', $id, PDO::PARAM_INT);
         $requetePrepare->execute();

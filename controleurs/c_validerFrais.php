@@ -145,7 +145,7 @@ switch ($action) {
             $pdo->creerNouvelleLigneFraisPourReport($idVisiteur, $moisSuivant);
         }
         //on reporte le frais HF au mois suivant
-        $pdo->reporterFraisHorsForfait($ligne, $idVisiteur);
+        $pdo->reporterFraisHorsForfait($ligne, $idVisiteur, $moisSuivant);
         echo json_encode('Report OK.'); //encodage de la réponse
         break;
     case 'validerFicheFrais':
