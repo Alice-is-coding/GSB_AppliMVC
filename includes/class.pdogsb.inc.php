@@ -450,7 +450,7 @@ class PdoGsb
             'UPDATE lignefraishorsforfait '
             . 'SET lignefraishorsforfait.mois = :unMois '
             . 'WHERE lignefraishorsforfait.idvisiteur = :unVisiteur '
-            . 'WHERE lignefraishorsforfait.id = :unId '
+            . 'AND lignefraishorsforfait.id = :unId '
         );
         $requetePrepare->bindParam(':unMois', $moisSuivant, PDO::PARAM_STR);
         $requetePrepare->bindParam(':unVisiteur', $idVisiteur, PDO::PARAM_STR);
